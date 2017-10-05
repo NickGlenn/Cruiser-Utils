@@ -76,10 +76,10 @@ export function shallow<F extends PatchProvider>(patch: PatchProvider): F {
  *
  * Example:
  *
- * var addTodo = pushItems(todo => ({ todos: [todo] }));
+ * var addWord = pushItems(word => ({ words: [word] }));
  *
- * addTodo("foo"); // state -> { todos: ["foo"] }
- * addTodo("bar"); // state -> { todos: ["foo", "bar"] }
+ * addWord("foo"); // state -> { words: ["foo"] }
+ * addWord("bar"); // state -> { words: ["foo", "bar"] }
  */
 export function pushItems<F extends PatchProvider>(patch: F): F {
   return function(...args: any[]): Reducer {
@@ -90,9 +90,16 @@ export function pushItems<F extends PatchProvider>(patch: F): F {
 }
 
 /**
+ * Removes the array values from the existing array at the same object field.
  *
+ * Example:
+ *
+ * var removeWord = removeItem(word => ({ words: word }));
+ *
+ * removeWord("foo"); // state -> { words: ["foo"] }
+ * removeWord("bar"); // state -> { words: ["foo", "bar"] }
  */
-export function removeItems<F extends PatchProvider>(patch: F): F {
+export function removeItem<F extends PatchProvider>(patch: F): F {
   return function(...args: any[]) {
     return function(state: object): object {
       return patchTree(patch(...args), state, filterFrom);

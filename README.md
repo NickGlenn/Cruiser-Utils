@@ -70,13 +70,13 @@ addTodo("Push value onto todos");
 
 ### Remove Array Items
 
-Remove found array values from the arrays found at the same branch locations.
+Remove found values from the arrays found at the same branch locations.
 
 ```ts
-import { removeItems } from "cruiser-utils";
+import { removeItem } from "cruiser-utils";
 
-var completeTodos = removeItems(function (removeTodo) {
-  return { todos: [removeTodo] };
+var completeTodos = removeItem(function (removeTodo) {
+  return { todos: removeTodo };
 });
 
 completeTodos("Delete any todo with this value");
