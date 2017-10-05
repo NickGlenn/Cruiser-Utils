@@ -61,11 +61,11 @@ Merge found array values into the arrays found at the same branch locations.
 ```ts
 import { pushItems } from "cruiser-utils";
 
-var addTodos = pushItems(function (...todos) {
-  return { todos: todos };
+var addTodo = pushItems(function (newTodo) {
+  return { todos: [newTodo] };
 });
 
-addTodos("Mow the lawn", "Walk the dog");
+addTodo("Push value onto todos");
 ```
 
 ### Remove Array Items
@@ -75,9 +75,9 @@ Remove found array values from the arrays found at the same branch locations.
 ```ts
 import { removeItems } from "cruiser-utils";
 
-var completeTodos = removeItems(function (...todos) {
-  return { todos: todos };
+var completeTodos = removeItems(function (removeTodo) {
+  return { todos: [removeTodo] };
 });
 
-completeTodos("Mow the lawn", "Walk the dog");
+completeTodos("Delete any todo with this value");
 ```
