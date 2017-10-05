@@ -1,25 +1,83 @@
 ## Cruiser Utilities
 
-Often times, the biggest challenge with reduces comes from trying to keep your state immutable.  Since actions are just factories that create new reducers to manipulate state, we can write generic utilities that perfom common operations safely on our behalf.
+Often times, the biggest challenge with reduces comes from trying to keep your state immutable.  Since actions are just factories that create new reducers to manipulate state, we can use generic utilities to create these reducers for us that will keep our data immutable only on the parts of the tree that have actually changed.
 
-### Push to Array
+## Getting Started
 
-An incredibly common operation, typically resolved using `.concat()`.  Takes a function that receives the arguments provided and uses the returned value as a "patch" to perform the push-style operations.  If you have nested
+Install via `npm`:
 
-```js
-import { pushArray } from "cruiser-utils";
-
-var addTodo = pushArray((...todos) => { todos });
-
-addTodo("Mow the lawn", "Walk the dog");
+```
+npm install --save cruiser-utils
 ```
 
+## Usage
 
 ```ts
 import { createStore } from "cruiser";
-import { alterNode } from "cruiser-utils";
+import { pushItems } from "cruiser-utils";
 
-var store = createStore({ foo: { bar: true } });
+/**
+ * Step 1 - Create a store with a store with a complex
+ *          state model (for example purposes).
+ */
+var store = createStore({
+  todosPage: {
+    loaded: false,
+    todos: ["Write Example"],
+  },
+});
 
-var toggleFooBar = alterNode("foo.bar", val => !val);
+/**
+ * Step 2 - Create a reducer that pushes new array items
+ *          onto the nested `todos` array.
+ */
+var addTodos = pushItems((...todos) => ({
+  todosPage: {
+    todos: todos,
+  },
+}));
+
+/**
+ * Step 3 - Invoke the newly created function and pass it
+ *          to our store's `.reduce()` method.
+ */
+store.reduce(addTodos("Write Better Examples", "Go Outside"));
+
+/**
+ * Step 4 - PROFIT.  The result should contain the nested
+ *          `todos` array with the values:
+ *
+ *          ["Write Example", "Write Better Examples", "Go Outside"]
+ */
+console.log(store.getState());
+```
+
+## Operations
+
+### Push Array Items
+
+Merge found array values into the arrays found at the same branch locations.
+
+```ts
+import { pushItems } from "cruiser-utils";
+
+var addTodos = pushItems(function (...todos) {
+  return { todos: todos };
+});
+
+addTodos("Mow the lawn", "Walk the dog");
+```
+
+### Remove Array Items
+
+Remove found array values from the arrays found at the same branch locations.
+
+```ts
+import { removeItems } from "cruiser-utils";
+
+var completeTodos = removeItems(function (...todos) {
+  return { todos: todos };
+});
+
+completeTodos("Mow the lawn", "Walk the dog");
 ```
