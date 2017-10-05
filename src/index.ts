@@ -43,20 +43,6 @@ export function patchTree(
 }
 
 /**
- * Concats the array value of B with the array value of A.
- */
-function concatInto(a: any[], b: any[]): any[] {
-  return (Array.isArray(b) ? b.concat(a) : a);
-}
-
-/**
- * Filters all values matching a from array b.
- */
-function filterFrom(a: any, b: any[]): any[] {
-  return (Array.isArray(b) ? b.filter(x => x !== a) : []);
-}
-
-/**
  * Performs a shallow merge with state using the object returned from the
  * given patch function.  Note that the given type signature is
  * for the return type - the given patch method receives the current
@@ -64,11 +50,38 @@ function filterFrom(a: any, b: any[]): any[] {
  * afterwards to avoid uneccessary function calls.
  */
 export function shallow<F extends PatchProvider>(patch: PatchProvider): F {
-  return function (...args: any[]): Reducer {
-    return function (state: object): object {
+  return function(...args: any[]): Reducer {
+    return function(state: object): object {
       return Object.assign({}, state, patch(state, ...args));
     };
   } as F;
+}
+
+/**
+ * Invoke the function on the patch node with the value on the
+ * actual state node, then return the new value from the
+ * patch node function call.
+ */
+function invokePatchMethod(a: Function, b: any) {
+  return a(b);
+}
+
+/**
+ * Performs the "node" functions as operations on the matching nodes.
+ */
+export function reduceNodes<F extends PatchProvider>(patch: PatchProvider): F {
+  return function(...args: any[]): Reducer {
+    return function(state: object): object {
+      return patchTree(patch(...args), state, invokePatchMethod);
+    };
+  } as F;
+}
+
+/**
+ * Concats the array value of B with the array value of A.
+ */
+function concatInto(a: any[], b: any[]): any[] {
+  return (Array.isArray(b) ? b.concat(a) : a);
 }
 
 /**
@@ -87,6 +100,13 @@ export function pushItems<F extends PatchProvider>(patch: F): F {
       return patchTree(patch(...args), state, concatInto);
     };
   } as F;
+}
+
+/**
+ * Filters all values matching a from array b.
+ */
+function filterFrom(a: any, b: any[]): any[] {
+  return (Array.isArray(b) ? b.filter(x => x !== a) : []);
 }
 
 /**

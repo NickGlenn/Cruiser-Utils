@@ -22,7 +22,6 @@ import { pushItems } from "cruiser-utils";
  */
 var store = createStore({
   todosPage: {
-    loaded: false,
     todos: ["Write Example"],
   },
 });
@@ -52,7 +51,21 @@ store.reduce(addTodos("Write Better Examples", "Go Outside"));
 console.log(store.getState());
 ```
 
-## Operations
+## Functions
+
+### Reduce Nodes
+
+Invoke the "micro-reducers" on each branch of the returned patched object and set the branch's value to whatever value was returned by the "micro-reducer".
+
+```ts
+import { reduceNodes } from "cruiser-utils";
+
+var toggleLoader = reduceNodes(function () {
+  return { loader: (current) => !current };
+});
+
+store.reduce(toggleLoader());
+```
 
 ### Push Array Items
 
@@ -65,7 +78,7 @@ var addTodo = pushItems(function (newTodo) {
   return { todos: [newTodo] };
 });
 
-addTodo("Push value onto todos");
+store.reduce(addTodo("Push value onto todos"));
 ```
 
 ### Remove Array Items
@@ -79,5 +92,5 @@ var completeTodos = removeItem(function (removeTodo) {
   return { todos: removeTodo };
 });
 
-completeTodos("Delete any todo with this value");
+store.reduce(completeTodos("Delete any todo with this value"));
 ```
